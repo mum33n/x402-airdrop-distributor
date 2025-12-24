@@ -1,0 +1,32 @@
+{
+  "type": "module",
+  "scripts": {
+    "start:built": "node dist/index.js",
+    "start": "tsx src/index.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec tsx src/index.ts",
+    "prisma:generate": "npx prisma generate"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "nodemon": "^3.1.11",
+    "prisma": "^6.19.1",
+    "ts-node": "^10.9.2",
+    "tsc": "^2.0.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "@solana/kit": "^5.1.0",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
+    "@x402-sovereign/core": "^0.4.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "uuid": "^13.0.0",
+    "viem": "^2.43.1",
+    "x402-express": "^1.0.0"
+  }
+}

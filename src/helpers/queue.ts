@@ -1,0 +1,34 @@
+import { prisma } from "../lib/prisma";
+import { type Job } from "../lib/prisma";
+
+export async function enqueueJob(payload: any) {
+  const job = await prisma.job.create({
+    data: {
+      status: "queued",
+      payload,
+    },
+  });
+
+  return job.id;
+}
+
+export async function next() {
+  const job = await prisma.$queryRaw<Job[]>`
+UPDATE "Job"
+SET
+  status = 'running',
+  "leaseUntil" = now() + interval '2 minutes',
+  "updatedAt" = now()
+WHERE id = (
+  SELECT id FROM "Job"
+  WHERE status = 'queued'
+     OR (status = 'running' AND "leaseUntil" < now())
+  ORDER BY "createdAt"
+  FOR UPDATE SKIP LOCKED
+  LIMIT 1
+)
+RETURNING *;
+`;
+
+  return job[0];
+}
