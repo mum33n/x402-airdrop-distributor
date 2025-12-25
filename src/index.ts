@@ -2,7 +2,7 @@ import express, { type Response } from "express";
 import config from "./config/config";
 import { paymentMiddleware } from "x402-express";
 import { createExpressAdapter, Facilitator } from "@x402-sovereign/core";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 // import { takeSnapshot } from "./helpers/snapshot";
 
 const app = express();
@@ -11,7 +11,7 @@ app.use(express.json());
 
 const facilitator = new Facilitator({
   evmPrivateKey: config.evmPrivateKey,
-  networks: [baseSepolia],
+  networks: [base],
 });
 
 createExpressAdapter(facilitator, app, "/facilitator");
