@@ -25,7 +25,7 @@ app.use(
       "GET /test": {
         // scheme: "exact",
         price: "$0.001",
-        network: "base-sepolia",
+        network: "base",
         config: { mimeType: "application/json" },
       },
     },
