@@ -14,8 +14,9 @@ export async function takeSnapshot(
   const _mint = new PublicKey(mint);
 
   const info = await connection.getParsedAccountInfo(_mint);
+  console.log(info);
 
-  const decimals = (info?.value?.data as any).parsed.info.decimals ?? 0;
+  const decimals = (info?.value?.data as any)?.parsed?.info?.decimals ?? 6;
 
   do {
     const res: any = await fetch(url, {
@@ -34,7 +35,7 @@ export async function takeSnapshot(
     }).then((r) => r.json());
 
     for (const acc of res?.result?.token_accounts) {
-      const amount = acc.amount / (10 * 10 ** decimals);
+      const amount = acc.amount / 10 ** decimals;
       if (amount < minBalance) continue;
       // console.log(acc);
 
@@ -48,6 +49,7 @@ export async function takeSnapshot(
   } while (cursor);
 
   const total = holders.reduce((a = 0, b) => a + b.holding, 0);
+  console.log(total);
 
   return { holders, total };
 }
