@@ -15,8 +15,10 @@ datasource db {
 }
 
 model Job {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   status     String
   payload    Json
-  leaseUntil DateTime
+  leaseUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
 }
