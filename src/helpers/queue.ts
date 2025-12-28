@@ -1,11 +1,12 @@
 import { prisma } from "../lib/prisma";
 import { type Job } from "../lib/prisma";
+import type { AirdropJobPayload } from "../lib/types";
 
-export async function enqueueJob(payload: any) {
+export async function enqueueJob(payload: AirdropJobPayload) {
   const job = await prisma.job.create({
     data: {
       status: "queued",
-      payload,
+      payload: JSON.stringify(payload, null, 2),
     },
   });
 

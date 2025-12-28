@@ -4,6 +4,8 @@ import { paymentMiddleware } from "x402-express";
 import { createExpressAdapter, Facilitator } from "@x402-sovereign/core";
 import { base } from "viem/chains";
 import { takeSnapshot } from "./helpers/snapshot";
+import { airdropWorker } from "./workers/airdrop";
+import { createAirdrop } from "./controllers/airdrop";
 // import { takeSnapshot } from "./helpers/snapshot";
 
 const app = express();
@@ -36,14 +38,18 @@ app.use(
 app.post("/test", (_, res: Response) => {
   res.send("Paid");
 });
+
+app.post("/airdrop", createAirdrop);
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
-  takeSnapshot(
-    config.heliusRPC,
-    "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
-    0n
-  );
+  // takeSnapshot(
+  //   config.heliusRPC,
+  //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
+  //   0n
+  // );
 });
+
+airdropWorker();
 
 // // takeSnapshot(
 //   //   "",
