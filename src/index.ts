@@ -6,6 +6,7 @@ import { base } from "viem/chains";
 import { takeSnapshot } from "./helpers/snapshot";
 import { airdropWorker } from "./workers/airdrop";
 import { createAirdrop } from "./controllers/airdrop";
+import path from "node:path";
 // import { takeSnapshot } from "./helpers/snapshot";
 
 const app = express();
@@ -38,6 +39,17 @@ app.use(
 app.post("/test", (_, res: Response) => {
   res.send("Paid");
 });
+
+app.use(
+  "/.well-known",
+  express.static(path.join(process.cwd(), "src", ".well-known"), {
+    setHeaders: (res, path) => {
+      if (path.endsWith("apple-app-site-association")) {
+        res.setHeader("Content-Type", "application/json");
+      }
+    },
+  })
+);
 
 app.post("/airdrop", createAirdrop);
 app.listen(config.port, () => {

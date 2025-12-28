@@ -2,6 +2,7 @@ import config from "../config/config";
 import { next } from "../helpers/queue";
 import { takeSnapshot } from "../helpers/snapshot";
 import type { AirdropJobPayload } from "../lib/types";
+import { solanaService } from "../services/solana";
 
 export async function airdropWorker() {
   while (true) {
@@ -17,10 +18,10 @@ export async function airdropWorker() {
 
     const payload = JSON.parse(job.payload!.toString()) as AirdropJobPayload;
 
-    const snapshot = await takeSnapshot(
-      config.heliusRPC,
+    const snapshot = await solanaService.takeSnapshot(
       payload.airdropTokenMint,
-      0n
+      0n,
+      ["DSYkcNDYvrLTYTYJPHBxq8gjXkNA4kxPUvYmajDmVCcR"]
     );
     console.log(snapshot);
 
