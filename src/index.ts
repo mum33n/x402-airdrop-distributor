@@ -61,7 +61,7 @@ app.listen(config.port, () => {
   // );
 });
 
-airdropWorker();
+// airdropWorker();
 
 // // takeSnapshot(
 //   //   "",
