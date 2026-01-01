@@ -51,7 +51,7 @@ app.use(
         config: { mimeType: "application/json" },
       },
     },
-    { url: `http://localhost:3000/facilitator` as any }
+    { url: `${config.appURL}/facilitator` as any }
     // { url: "https://x402.org/facilitator" as any }
   )
 );
@@ -73,7 +73,7 @@ app.use(
 app.post("/airdrop", createAirdrop);
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
-  console.log(`http://localhost:3000/facilitator`);
+  console.log(`${config.appURL}/facilitator`);
   // solanaService.getTokenBalance(
   //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
   //   "CGkM99KyLn48sf5g2jJrfkbxTGevd34Xft2FgV3cwxf9"
