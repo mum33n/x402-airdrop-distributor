@@ -1,22 +1,39 @@
 import express, { type Response } from "express";
 import config from "./config/config";
 import { paymentMiddleware } from "x402-express";
-import { createExpressAdapter, Facilitator } from "@x402-sovereign/core";
+// import { createExpressAdapter, Facilitator } from "@x402-sovereign/core";
 import { base } from "viem/chains";
 import { takeSnapshot } from "./helpers/snapshot";
 import { airdropWorker } from "./workers/airdrop";
 import { createAirdrop } from "./controllers/airdrop";
 import path from "node:path";
 import { solanaService } from "./services/solana";
+import { createExpressAdapter, Facilitator } from "@x402-teller/core";
+import bs58 from "bs58";
 // import { takeSnapshot } from "./helpers/snapshot";
 
 const app = express();
 
 app.use(express.json());
 
+// const facilitator = new Facilitator({
+//   evmPrivateKey: config.evmPrivateKey,
+//   networks: [base],
+// });
+
 const facilitator = new Facilitator({
-  evmPrivateKey: config.evmPrivateKey,
-  networks: [base],
+  // evmPrivateKey: config.evmPrivateKey,
+  solanaPrivateKey: bs58.encode(config.solPrivateKey),
+  solanaFeePayer: "8peSBoTQpczv4mkCW7eB85Ww33DaGTfwE8r2DgiqET8N",
+  networks: ["solana"],
+  payWallRouteConfig: {
+    "/test": {
+      price: "$0.001",
+      network: "solana",
+      config: { description: "Premium API access" },
+    },
+  },
+  // networks: [base],
 });
 
 createExpressAdapter(facilitator, app, "/facilitator");
@@ -24,20 +41,21 @@ createExpressAdapter(facilitator, app, "/facilitator");
 app.use(
   paymentMiddleware(
     // "CbQWkZ22EPGzuyv6ZzP7t5u6rc4YZPMteJ1434RvW7Pb" as Address,
-    "0xd7fd52209711c94a3fcc4f3aeb3668d2df829254",
-    // "CbQWkZ22EPGzuyv6ZzP7t5u6rc4YZPMteJ1434RvW7Pb" as Address,
+    // "0xd7fd52209711c94a3fcc4f3aeb3668d2df829254",
+    "CbQWkZ22EPGzuyv6ZzP7t5u6rc4YZPMteJ1434RvW7Pb" as any,
     {
-      "POST /test": {
+      "GET /test": {
         // scheme: "exact",
         price: "$0.001",
         network: "solana",
         config: { mimeType: "application/json" },
       },
     },
-    { url: `${config.appURL}/facilitator` as any }
+    { url: `http://localhost:3000/facilitator` as any }
+    // { url: "https://x402.org/facilitator" as any }
   )
 );
-app.post("/test", (_, res: Response) => {
+app.get("/test", (_, res: Response) => {
   res.send("Paid");
 });
 
@@ -55,6 +73,7 @@ app.use(
 app.post("/airdrop", createAirdrop);
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
+  console.log(`http://localhost:3000/facilitator`);
   // solanaService.getTokenBalance(
   //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
   //   "CGkM99KyLn48sf5g2jJrfkbxTGevd34Xft2FgV3cwxf9"

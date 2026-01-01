@@ -23,6 +23,7 @@
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@x402-sovereign/core": "^0.4.0",
+    "@x402-teller/core": "^1.0.3",
     "bs58": "^6.0.0",
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
