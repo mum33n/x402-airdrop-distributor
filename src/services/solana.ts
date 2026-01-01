@@ -1,5 +1,16 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import config from "../config/config";
+import {
+  createAssociatedTokenAccountInstruction,
+  createTransferCheckedInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
 
 class SolanaService {
   private connection: Connection;
@@ -8,6 +19,125 @@ class SolanaService {
   constructor() {
     this.rpcURL = config.heliusRPC;
     this.connection = new Connection(config.heliusRPC);
+  }
+
+  async getSolBalance(address: string | PublicKey) {
+    const publicKey = new PublicKey(address);
+
+    const lamports = await this.connection.getBalance(publicKey);
+    const sol = lamports / 1e9;
+
+    console.log(`Balance: ${sol} SOL`);
+    return sol;
+  }
+
+  async getTokenBalance(tokenMint: string, wallet: string) {
+    const mint = new PublicKey(tokenMint);
+    const _wallet = new PublicKey(wallet);
+
+    const ata = await getAssociatedTokenAddress(mint, _wallet);
+
+    const accountInfo = await this.connection.getAccountInfo(ata);
+    console.log("token account", accountInfo);
+    if (!accountInfo) {
+      return 0;
+    }
+
+    const balance = await this.connection.getTokenAccountBalance(ata);
+    console.log("balance:", balance.value.uiAmount ?? 0);
+    return balance.value.uiAmount ?? 0;
+  }
+
+  async buildTx(
+    tokenMint: string,
+    payer: any,
+    batch: any[],
+    decimals: number,
+    totalSnapshotToken: number,
+    totalAirdropToken: number
+  ) {
+    const instructions: TransactionInstruction[] = [];
+    const mint = new PublicKey(tokenMint);
+
+    const payerATA = await getAssociatedTokenAddress(mint, payer.publicKey);
+
+    //  Precompute ATAs
+    const recipients = await Promise.all(
+      batch.map(async (r) => ({
+        owner: new PublicKey(r.holder),
+        ata: await getAssociatedTokenAddress(mint, new PublicKey(r.holder)),
+        amount:
+          (r.holding / totalSnapshotToken) * totalAirdropToken * 10 ** decimals,
+      }))
+    );
+
+    //  Bulk fetch ATA infos
+    const ataInfos = await this.connection.getMultipleAccountsInfo(
+      recipients.map((r) => r.ata)
+    );
+
+    recipients.forEach((r, i) => {
+      if (r.amount === 0) return;
+
+      if (!ataInfos[i]) {
+        instructions.push(
+          createAssociatedTokenAccountInstruction(
+            payer.publicKey,
+            r.ata,
+            r.owner,
+            mint
+          )
+        );
+      }
+
+      instructions.push(
+        createTransferCheckedInstruction(
+          payerATA,
+          mint,
+          r.ata,
+          payer.publicKey,
+          r.amount,
+          decimals
+        )
+      );
+    });
+
+    const { blockhash } = await this.connection.getLatestBlockhash();
+
+    const message = new TransactionMessage({
+      payerKey: payer.publicKey,
+      recentBlockhash: blockhash,
+      instructions,
+    }).compileToV0Message();
+
+    return new VersionedTransaction(message);
+  }
+
+  public async sendAirdropBatch(
+    mint: string,
+    payer: any,
+    batch: any[],
+    decimals: number,
+    totalSnapshotToken: number,
+    totalAirdropToken: number
+  ) {
+    try {
+      const tx = await this.buildTx(
+        mint,
+        payer,
+        batch,
+        decimals,
+        totalSnapshotToken,
+        totalAirdropToken
+      );
+      tx.sign([payer]);
+      console.log(tx);
+      const sig = await this.connection.sendTransaction(tx);
+      await this.connection.confirmTransaction(sig);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   public async takeSnapshot(
@@ -21,7 +151,6 @@ class SolanaService {
     const _mint = new PublicKey(mint);
 
     const info = await this.connection.getParsedAccountInfo(_mint);
-    console.log(info);
 
     const decimals = (info?.value?.data as any)?.parsed?.info?.decimals ?? 6;
 
@@ -59,7 +188,6 @@ class SolanaService {
     } while (cursor);
 
     const total = holders.reduce((a = 0, b) => a + b.holding, 0);
-    console.log(total);
 
     return { holders, total };
   }

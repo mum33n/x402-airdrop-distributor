@@ -7,6 +7,7 @@ import { takeSnapshot } from "./helpers/snapshot";
 import { airdropWorker } from "./workers/airdrop";
 import { createAirdrop } from "./controllers/airdrop";
 import path from "node:path";
+import { solanaService } from "./services/solana";
 // import { takeSnapshot } from "./helpers/snapshot";
 
 const app = express();
@@ -26,10 +27,10 @@ app.use(
     "0xd7fd52209711c94a3fcc4f3aeb3668d2df829254",
     // "CbQWkZ22EPGzuyv6ZzP7t5u6rc4YZPMteJ1434RvW7Pb" as Address,
     {
-      "GET /test": {
+      "POST /test": {
         // scheme: "exact",
         price: "$0.001",
-        network: "base",
+        network: "solana",
         config: { mimeType: "application/json" },
       },
     },
@@ -54,10 +55,20 @@ app.use(
 app.post("/airdrop", createAirdrop);
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
+  // solanaService.getTokenBalance(
+  //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
+  //   "CGkM99KyLn48sf5g2jJrfkbxTGevd34Xft2FgV3cwxf9"
+  // );
   // takeSnapshot(
   //   config.heliusRPC,
   //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
   //   0n
+  // );
+
+  // solanaService.takeSnapshot(
+  //   "CX1snYHFkPJXE8yDNYAz1G88ApLQ3wLiuFYzdNSa1JRd",
+  //   0n,
+  //   []
   // );
 });
 

@@ -18,7 +18,9 @@ model Job {
   id         String    @id @default(uuid())
   status     String
   payload    Json
+  snapshot   Json?
   leaseUntil DateTime?
+  batchIndex Int?      @default(0)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime?
 }
