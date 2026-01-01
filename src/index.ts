@@ -5,7 +5,7 @@ import { createExpressAdapter, Facilitator } from "@x402-sovereign/core";
 import { base } from "viem/chains";
 import { takeSnapshot } from "./helpers/snapshot";
 import { airdropWorker } from "./workers/airdrop";
-import { createAirdrop } from "./controllers/airdrop";
+import { createAirdrop, getAirdrop } from "./controllers/airdrop";
 import path from "node:path";
 import { solanaService } from "./services/solana";
 // import { createExpressAdapter, Facilitator } from "@x402-teller/core";
@@ -50,13 +50,29 @@ app.use(
         network: "base",
         config: { mimeType: "application/json" },
       },
+
+      "POST /airdrop": {
+        // scheme: "exact",
+        price: "$0.001",
+        network: "base",
+        config: { mimeType: "application/json" },
+      },
+      "GET /airdrop-status": {
+        // scheme: "exact",
+        price: "$0.001",
+        network: "base",
+        config: { mimeType: "application/json" },
+      },
     },
+
     { url: `${config.appURL}/facilitator` as any }
     // { url: "https://x402.org/facilitator" as any }
   )
 );
 app.get("/test", (_, res: Response) => {
-  res.send("Paid");
+  res.json({
+    message: "successful",
+  });
 });
 
 app.use(
@@ -71,6 +87,7 @@ app.use(
 );
 
 app.post("/airdrop", createAirdrop);
+app.get("/airdrop-status/:id", getAirdrop);
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
   console.log(`${config.appURL}/facilitator`);
@@ -91,7 +108,7 @@ app.listen(config.port, () => {
   // );
 });
 
-// airdropWorker();
+airdropWorker();
 
 // // takeSnapshot(
 //   //   "",

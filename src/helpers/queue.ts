@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { type Job } from "../lib/prisma";
 import type { AirdropJobPayload } from "../lib/types";
 import { solanaService } from "../services/solana";
+import config from "../config/config";
 
 export async function enqueueJob(
   payload: AirdropJobPayload,
@@ -30,7 +31,13 @@ export async function enqueueJob(
     },
   });
 
-  return { id: job.id, totalAdresses: snapshot.holders.length };
+  return {
+    id: job.id,
+    status: "queued",
+    message: "Aidrop job succesfuly submited",
+    totalAdresses: snapshot.holders.length,
+    statusUrl: `${config.appURL}/airdrop-status`,
+  };
 }
 
 export async function next() {
