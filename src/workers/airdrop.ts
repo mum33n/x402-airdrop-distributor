@@ -39,7 +39,7 @@ export async function airdropWorker() {
 
     for (const batch of batches) {
       // await sendAirdropBatch(conn, payer, airdropMint, chunk);
-      await solanaService.sendAirdropBatch(
+      const txHash = await solanaService.sendAirdropBatch(
         payload.airdropTokenMint,
         payer,
         batch,
@@ -53,6 +53,9 @@ export async function airdropWorker() {
         data: {
           batchIndex: job.batchIndex! + 1,
           leaseUntil: new Date(Date.now() + 2 * 60 * 1000),
+          txHashes: {
+            push: txHash,
+          },
         },
       });
     }

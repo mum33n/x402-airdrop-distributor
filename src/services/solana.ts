@@ -134,6 +134,7 @@ class SolanaService {
       console.log(tx);
       const sig = await this.connection.sendTransaction(tx);
       await this.connection.confirmTransaction(sig);
+      return sig;
     } catch (error) {
       console.log(error);
       throw error;

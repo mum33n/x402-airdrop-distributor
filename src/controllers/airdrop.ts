@@ -60,6 +60,7 @@ export const getAirdrop = async (req: Request, res: Response) => {
       id: job?.id,
       status: job?.status,
       snapshot: JSON.parse(job?.snapshot as any),
+      transactionHashes: job?.txHashes,
     });
   } catch (error: any) {
     console.log(error);
