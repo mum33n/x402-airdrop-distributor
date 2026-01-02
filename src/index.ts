@@ -47,7 +47,7 @@ app.use(
       "GET /test": {
         // scheme: "exact",
         price: "$0.001",
-        network: "base",
+        network: "solana",
         config: { mimeType: "application/json" },
       },
 
@@ -65,8 +65,8 @@ app.use(
       },
     },
 
-    { url: `${config.appURL}/facilitator` as any }
-    // { url: "https://x402.org/facilitator" as any }
+    // { url: `${config.appURL}/facilitator` as any }
+    { url: "https://pay.x402.jobs" as any }
   )
 );
 app.get("/test", (_, res: Response) => {
