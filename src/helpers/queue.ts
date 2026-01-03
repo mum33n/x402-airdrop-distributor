@@ -36,7 +36,7 @@ export async function enqueueJob(
     status: "queued",
     message: "Aidrop job succesfuly submited",
     totalAdresses: snapshot.holders.length,
-    statusUrl: `${config.appURL}/airdrop-status`,
+    statusUrl: `${config.appURL}/airdrop-status/${job.id}`,
   };
 }
 

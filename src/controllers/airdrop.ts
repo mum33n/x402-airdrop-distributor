@@ -17,8 +17,6 @@ export const createAirdrop = async (req: Request, res: Response) => {
     exclude_wallets,
   } = req.body;
 
-  console.log(req.body);
-
   try {
     const payer = Keypair.fromSecretKey(
       Uint8Array.from(bs58.decode(sender_keypair!))
@@ -54,7 +52,6 @@ export const createAirdrop = async (req: Request, res: Response) => {
 export const getAirdrop = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    console.log("id", id);
     const job = await prisma.job.findFirst({ where: { id: id! } });
     res.json({
       id: job?.id,

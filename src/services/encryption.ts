@@ -15,7 +15,6 @@ class Encryption {
 
   encrypt(plain: string) {
     const iv = crypto.randomBytes(12);
-    console.log(process.env.ENCRYPTION_MASTER_KEY, this.masterKey);
     const cipher = crypto.createCipheriv(this.algorithm, this.masterKey, iv);
 
     const encrypted = Buffer.concat([

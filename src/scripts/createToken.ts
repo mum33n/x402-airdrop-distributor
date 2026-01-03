@@ -14,7 +14,7 @@ const ACCOUNTS_PATH = path.join(
   process.cwd(),
   "src",
   "generated",
-  "accounts.json"
+  "accounts-new.json"
 );
 
 function createAccounts(amount: number) {
@@ -37,7 +37,7 @@ async function loadAccounts() {
     const file = fs.readFileSync(ACCOUNTS_PATH, "utf8");
     return JSON.parse(file);
   } catch {
-    return createAccounts(10);
+    return createAccounts(42);
   }
 }
 
@@ -47,8 +47,6 @@ async function loadAccounts() {
 
   // 1️⃣ Create token mint
   const mint = await createMint(connection, payer, payer.publicKey, null, 6);
-
-  console.log("Token Mint:", mint.toBase58());
 
   // 2️⃣ Mint tokens to EACH wallet
   for (const acc of accounts) {
@@ -67,11 +65,7 @@ async function loadAccounts() {
       mint,
       ata.address,
       payer.publicKey,
-      100 * 10 ** 6 // 100 tokens per wallet
+      1000 * 10 ** 6
     );
-
-    console.log(`Minted 100 tokens to ${owner.toBase58()}`);
   }
-
-  console.log("✅ Distribution complete");
 })();

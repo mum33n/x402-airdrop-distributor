@@ -27,7 +27,6 @@ class SolanaService {
     const lamports = await this.connection.getBalance(publicKey);
     const sol = lamports / 1e9;
 
-    console.log(`Balance: ${sol} SOL`);
     return sol;
   }
 
@@ -38,13 +37,11 @@ class SolanaService {
     const ata = await getAssociatedTokenAddress(mint, _wallet);
 
     const accountInfo = await this.connection.getAccountInfo(ata);
-    console.log("token account", accountInfo);
     if (!accountInfo) {
       return 0;
     }
 
     const balance = await this.connection.getTokenAccountBalance(ata);
-    console.log("balance:", balance.value.uiAmount ?? 0);
     return balance.value.uiAmount ?? 0;
   }
 
@@ -66,8 +63,9 @@ class SolanaService {
       batch.map(async (r) => ({
         owner: new PublicKey(r.holder),
         ata: await getAssociatedTokenAddress(mint, new PublicKey(r.holder)),
-        amount:
-          (r.holding / totalSnapshotToken) * totalAirdropToken * 10 ** decimals,
+        amount: Math.floor(
+          (r.holding / totalSnapshotToken) * totalAirdropToken * 10 ** decimals
+        ),
       }))
     );
 
@@ -131,9 +129,9 @@ class SolanaService {
         totalAirdropToken
       );
       tx.sign([payer]);
-      console.log(tx);
       const sig = await this.connection.sendTransaction(tx);
-      await this.connection.confirmTransaction(sig);
+      const hash = await this.connection.confirmTransaction(sig);
+
       return sig;
     } catch (error) {
       console.log(error);
@@ -177,7 +175,6 @@ class SolanaService {
         }
         const amount = acc.amount / 10 ** decimals;
         if (amount < minBalance) continue;
-        // console.log(acc);
 
         holders.push({
           holder: acc.owner,
