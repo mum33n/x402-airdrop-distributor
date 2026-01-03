@@ -19,7 +19,7 @@ router.use(
       "POST /airdrop": {
         // scheme: "exact",
         price: "$0.001",
-        network: "solana",
+        network: "base",
         config: {
           mimeType: "application/json",
           inputSchema: {
