@@ -14,11 +14,13 @@ export async function airdropWorker() {
     try {
       const job = await next();
       if (!job) {
+        console.log("no job", job);
         await new Promise((r) => setTimeout(r, 2000));
         continue;
       }
 
       try {
+        console.log("distribution job started");
         const payload = JSON.parse(
           job.payload!.toString()
         ) as AirdropJobPayload;
