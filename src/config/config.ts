@@ -17,10 +17,9 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 const heliusRPC = process.env.HELIUS_RPC;
 const evmPrivateKey = process.env.EVM_PRIVATE_KEY!;
 const solPrivateKey = bs58.decode(process.env.SOL_PRIVATE_KEY!);
-const appURL =
-  (nodeEnv === "development"
-    ? process.env.APP_URL
-    : `http://localhost:${port}`) ?? `http://localhost:${port}`;
+const appURL = process.env.APP_URL ?? `http://localhost:${port}`;
+
+console.log("app url", appURL);
 
 if (!heliusRPC) {
   throw "HELIUS RPC NOT PROVIDED";
