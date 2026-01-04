@@ -33,8 +33,6 @@ export async function airdropWorker() {
           Uint8Array.from(bs58.decode(privateKey))
         );
 
-        console.log("key", privateKey, Keypair);
-
         const snapshot: any = JSON.parse(job.snapshot as string);
 
         const batches = batch(snapshot.holders, 15).slice(job.batchIndex!);

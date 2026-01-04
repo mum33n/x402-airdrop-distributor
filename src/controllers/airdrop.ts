@@ -28,7 +28,7 @@ export const createAirdrop = async (req: Request, res: Response) => {
     );
 
     if (aidropTokenBalance < total_airdrop_amount) {
-      res.status(401).send({ message: "Insufficient Balance" });
+      return res.status(401).send({ message: "Insufficient Balance" });
     }
 
     const encryptedKey = encryptionService.encrypt(sender_keypair);
@@ -42,10 +42,10 @@ export const createAirdrop = async (req: Request, res: Response) => {
       excludeWallets: exclude_wallets?.split(",") ?? [],
     };
     const job = await enqueueJob(payload, payer.publicKey);
-    res.json({ ...job });
+    return res.json({ ...job });
   } catch (error: any) {
     console.log(error);
-    res.status(400).json({ message: error.message ?? error });
+    return res.status(400).json({ message: error.message ?? error });
   }
 };
 
