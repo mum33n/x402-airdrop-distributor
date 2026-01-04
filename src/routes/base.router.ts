@@ -43,7 +43,7 @@ router.use(
       },
     },
 
-    { url: `${config.appURL}/facilitator` as any }
+    { url: `http://localhost${config.port}/facilitator` as any }
     // { url: "https://pay.x402.jobs" as any }
   )
 );
